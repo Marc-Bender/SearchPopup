@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="../SearchPopup/SearchPopup.csproj" />
+  <Project Path="SearchPopupDemo.csproj" />
+</Solution>
