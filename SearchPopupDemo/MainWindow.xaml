@@ -6,14 +6,17 @@
         xmlns:local="clr-namespace:SearchPopupDemo"
         xmlns:localSearch="clr-namespace:SearchPopup;assembly=SearchPopup"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="800"
+        LocationChanged="Window_LocationChanged"
+        SizeChanged="Window_SizeChanged"
+        >
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="6*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <TextBox GotFocus="TextBox_GotFocus" LostFocus="TextBox_LostFocus" Grid.Row="0">Search fruits</TextBox>
+        <TextBox GotFocus="TextBox_GotFocus" LostFocus="TextBox_LostFocus" Grid.Row="0" TextChanged="TextBox_TextChanged">Search fruits</TextBox>
         <localSearch:SearchPopup Grid.Row="0" x:Name="fruitSearchPopup" DataContext="{Binding Path=fruits, RelativeSource={RelativeSource AncestorType=Window}}"/>
         <TextBox Grid.Row="2">Search Cars</TextBox>
     </Grid>

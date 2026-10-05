@@ -16,8 +16,8 @@
     </UserControl.Resources>
 
     <Grid>
-        <Popup x:Name="popupControl" StaysOpen="True" LostFocus="popupControl_LostFocus">
-            <ListView ItemsSource="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">
+        <Popup x:Name="popupControl" StaysOpen="True" LostFocus="popupControl_LostFocus" Opened="popupControl_Opened">
+            <ListView ItemsSource="{Binding ShownElements, RelativeSource={RelativeSource AncestorType=UserControl}}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <Grid>
@@ -29,7 +29,7 @@
                                 <RowDefinition Height="20"/>
                             </Grid.RowDefinitions>
 
-                            <TextBox Grid.Column="0" BorderThickness="0" Text="{Binding ElementText}" />
+                            <TextBox Grid.Column="0" BorderThickness="0" Text="{Binding ElementText}" IsManipulationEnabled="False"/>
 
                             <Image Grid.Column="1" Source="/SearchPopup;component/resources/notStarred.png" Visibility="{Binding IsFavorite, Converter={StaticResource BoolInverseVisibility}}" MouseDown="Image_MouseDown"/>
                             <Image Grid.Column="1" Source="/SearchPopup;component/resources/starred.png" Visibility="{Binding IsFavorite, Converter={StaticResource BoolVisibility}}" MouseDown="Image_MouseDown"/>
