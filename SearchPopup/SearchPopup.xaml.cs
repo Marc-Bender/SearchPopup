@@ -1,36 +1,39 @@
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using System.Collections.ObjectModel;
-using System.Text;
+using SearchPopup.ViewModels;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace SearchPopup
 {
-    /// <summary>
-    /// Interaction logic for SearchPopup.xaml
-    /// </summary>
     public partial class SearchPopup : UserControl
     {
         public Popup containedPopup => this.popupControl;
-        public ObservableCollection<SearchableElement> ShownElements { get; set; } = new();
         public SearchPopup()
         {
             InitializeComponent();
-            RegenerateShowedElements("");
+
+            // to prevent that the popup stays open when the app loses focus -- which would cause the popup to be on top of any other apps,
+            // this can not be avoided otherwise as staysopen must remain true to ensure that the popup opens reliably at all and dynamically modifying the stayopen member also did not yield the expected results
+            Loaded += (_, _) =>
+            {
+                var window = Window.GetWindow(this);
+                if (window != null)
+                {
+                    window.Deactivated += (_, _) => containedPopup.IsOpen = false;
+                }
+            };
         }
+
+
 
         private void popupControl_LostFocus(object sender, RoutedEventArgs e)
         {
-            containedPopup.IsOpen = false;
+            if (popupControl.IsKeyboardFocusWithin == false)
+            {
+                popupControl.IsOpen = false;
+            }
         }
 
         private void Image_MouseDown(object sender, MouseButtonEventArgs e)
@@ -46,79 +49,36 @@ namespace SearchPopup
 
         public void RefreshLocation()
         {
-            if (containedPopup.IsOpen == true)
+            if (popupControl.IsOpen == true)
             {
                 // repositioning the popup only happens on isopen toggle ...
-                containedPopup.IsOpen = false;
-                containedPopup.IsOpen = true;
+                popupControl.IsOpen = false;
+                popupControl.IsOpen = true;
             }
         }
 
-        public string[] GenerateFuzzyComponents(string fuzzySearchText)
+        private void popupControl_Opened(object sender, EventArgs e)
         {
-            string[] components = [];
-            for (int i = 0; i<fuzzySearchText.Length; i++)
+            if (DataContext is SearchPopupViewModel vm)
             {
-                for (int j = 0; j<fuzzySearchText.Length - i - 1; j++) // -1 to ensure that the component is never just simply echoed... this is to allow for handling of whole text matches different to substring matches
-                {
-                    components.Append(fuzzySearchText.Substring(i, j));
-                }
+                vm.SearchText = "";
+                searchTextField.Focus();
+                vm.RegenerateShowedElements();
             }
-
-            return components;
         }
-        public void RegenerateShowedElements(string fuzzySearchText)
+
+        private void TextBox_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (DataContext is ObservableCollection<SearchableElement> elements)
+            if (
+                    (sender is Label label)
+                 && (label.DataContext is SearchableElement element)
+                 && (DataContext is SearchPopupViewModel vm)
+               )
             {
-                // show elements based on the following categorization
-                // favorites first -- they always get displayed
-                // elements that contain one of the words searched for in whole
-                // elements that contain any substring of the search term at any position
-                ShownElements.Clear();
-                var favorites = new ObservableCollection<SearchableElement>(elements.Where(x => x.IsFavorite == true).ToList());
-                foreach(var favorite in favorites)
-                {
-                    ShownElements.Add(favorite);
-                }
-
-                var words = fuzzySearchText.ToLower().Split(" "); // to lower to allow for more permissive matching (eg. searching for "ap" in "Apple", "Pineapple", "Grape" should return all 3)
-                
-                foreach (var word in words)
-                {
-                    var wholeWordMatches = elements.Where(x => x.ElementText.ToLower().Contains(word) && x.IsFavorite == false); // must also check for isFavorite == false here to avoid duplicate entries!
-                    foreach(var match in wholeWordMatches)
-                    {
-                        ShownElements.Add(match);
-                    }
-                }
-
-                string[] fuzzySearchComponents = [];
-
-                foreach (var word in words)
-                {
-                    foreach (var component in GenerateFuzzyComponents(word))
-                    {
-                        fuzzySearchComponents.Append(component);
-                    }
-                }
-
-                foreach (var component in fuzzySearchComponents)
-                {
-                    var matchesThisComponent = elements.Where(x => x.ElementText.ToLower().Contains(component) && x.IsFavorite == false); // must also check for isFavorite == false here to avoid duplicate entries!
-                    if (matchesThisComponent.Count() != 0)
-                    {
-                        foreach(var match in matchesThisComponent)
-                        {
-                            ShownElements.Add(match);
-                        }
-                    }
-                }                
+                vm.SelectedElement = element;
+                popupControl.IsOpen = false;
             }
-
         }
-
-        private void popupControl_Opened(object sender, EventArgs e) => RegenerateShowedElements("");
     }
 
 }

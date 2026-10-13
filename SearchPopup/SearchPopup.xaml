@@ -16,27 +16,34 @@
     </UserControl.Resources>
 
     <Grid>
-        <Popup x:Name="popupControl" StaysOpen="True" LostFocus="popupControl_LostFocus" Opened="popupControl_Opened">
-            <ListView ItemsSource="{Binding ShownElements, RelativeSource={RelativeSource AncestorType=UserControl}}">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="4*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="20"/>
-                            </Grid.RowDefinitions>
+        <Popup x:Name="popupControl" StaysOpen="True" Opened="popupControl_Opened" LostFocus="popupControl_LostFocus">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="5*"/>
+                </Grid.RowDefinitions>
+                <TextBox x:Name="searchTextField" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0"/>
+                <ListView ItemsSource="{Binding ShownElements}" Grid.Row="1">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="4*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="25"/>
+                                </Grid.RowDefinitions>
 
-                            <TextBox Grid.Column="0" BorderThickness="0" Text="{Binding ElementText}" IsManipulationEnabled="False"/>
+                                <Label Grid.Column="0" BorderThickness="0" Content="{Binding ElementText}" MouseDown="TextBox_MouseDown" />
 
-                            <Image Grid.Column="1" Source="/SearchPopup;component/resources/notStarred.png" Visibility="{Binding IsFavorite, Converter={StaticResource BoolInverseVisibility}}" MouseDown="Image_MouseDown"/>
-                            <Image Grid.Column="1" Source="/SearchPopup;component/resources/starred.png" Visibility="{Binding IsFavorite, Converter={StaticResource BoolVisibility}}" MouseDown="Image_MouseDown"/>
-                        </Grid>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+                                <Image Grid.Column="1" Source="/SearchPopup;component/resources/notStarred.png" Visibility="{Binding IsFavorite, Converter={StaticResource BoolInverseVisibility}}" MouseDown="Image_MouseDown"/>
+                                <Image Grid.Column="1" Source="/SearchPopup;component/resources/starred.png" Visibility="{Binding IsFavorite, Converter={StaticResource BoolVisibility}}" MouseDown="Image_MouseDown"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>
         </Popup>
     </Grid>
 </UserControl>

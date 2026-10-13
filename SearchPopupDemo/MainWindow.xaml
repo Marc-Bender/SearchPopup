@@ -16,8 +16,8 @@
             <RowDefinition Height="6*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <TextBox GotFocus="TextBox_GotFocus" LostFocus="TextBox_LostFocus" Grid.Row="0" TextChanged="TextBox_TextChanged">Search fruits</TextBox>
-        <localSearch:SearchPopup Grid.Row="0" x:Name="fruitSearchPopup" DataContext="{Binding Path=fruits, RelativeSource={RelativeSource AncestorType=Window}}"/>
+        <TextBox GotFocus="TextBox_GotFocus" LostFocus="TextBox_LostFocus" Grid.Row="0" Text="{Binding Path=fruitsViewModel.SelectedElement.ElementText, RelativeSource={RelativeSource AncestorType=Window}}"/>
+        <localSearch:SearchPopup Grid.Row="0" x:Name="fruitSearchPopup" DataContext="{Binding Path=fruitsViewModel, RelativeSource={RelativeSource AncestorType=Window}}"/>
         <TextBox Grid.Row="2">Search Cars</TextBox>
     </Grid>
 </Window>

@@ -1,4 +1,5 @@
 ﻿using SearchPopup;
+using SearchPopup.ViewModels;
 using System.Collections.ObjectModel;
 using System.Text;
 using System.Windows;
@@ -19,8 +20,7 @@ namespace SearchPopupDemo
     /// </summary>
     public partial class MainWindow : Window
     {
-        public ObservableCollection<SearchableElement> fruits { get; } =
-        new ObservableCollection<SearchableElement>
+        public static ObservableCollection<SearchableElement> fruits = new ObservableCollection<SearchableElement>
         {
             new SearchableElement { ElementText = "Apple", IsFavorite = false },
             new SearchableElement { ElementText = "Cherry", IsFavorite = true },
@@ -30,6 +30,13 @@ namespace SearchPopupDemo
             new SearchableElement { ElementText = "Strawberry", IsFavorite = false},
             new SearchableElement { ElementText = "Grape", IsFavorite = false},
             new SearchableElement { ElementText = "Lemon", IsFavorite = false},
+        };
+
+        public SearchPopupViewModel fruitsViewModel { get; } = new SearchPopupViewModel
+        {
+            PossibleElements = fruits,
+            //ShownElements = new ObservableCollection<SearchableElement>(fruits),
+            SearchText = "",
         };
 
         public MainWindow()
@@ -63,17 +70,6 @@ namespace SearchPopupDemo
         private void Window_MovedOrResized(object sender, EventArgs e)
         {
             fruitSearchPopup.RefreshLocation();
-        }
-
-        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if(
-                    (sender is TextBox textBox)
-                 && (fruitSearchPopup is not null) // this may happen upon program start ...
-              )
-            {
-                fruitSearchPopup.RegenerateShowedElements(textBox.Text);
-            }
         }
     }
 }
